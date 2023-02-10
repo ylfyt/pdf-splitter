@@ -5,7 +5,7 @@ interface ContainerProps {
 }
 
 const Container: FC<ContainerProps> = ({ children }) => {
-	return <div className="w-3/4 xl:w-1/2">{children}</div>;
+	return <div className="w-full md:w-3/4 xl:w-1/2">{children}</div>;
 };
 
 export default Container;

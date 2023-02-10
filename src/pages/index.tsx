@@ -6,19 +6,15 @@ export const Home = () => {
 	const [file, setFile] = useState<File>();
 	const [numOfPages, setNumOfPages] = useState<number>();
 	const [doc, setDoc] = useState<PDFDocument>();
-	const [loading, setLoading] = useState(false);
 	const [splitter, setSplitter] = useState<string[]>(['']);
-	const [message, setMessage] = useState('');
 
 	useEffect(() => {
 		if (!file) {
 			setDoc(undefined);
 			return;
 		}
-		setLoading(true);
 		file.arrayBuffer().then(async (buff) => {
 			setDoc(await PDFDocument.load(buff));
-			setLoading(false);
 		});
 	}, [file]);
 
@@ -72,10 +68,10 @@ export const Home = () => {
 	};
 
 	return (
-		<div className="mt-10 border border-gray-900 rounded-lg pt-4 px-6 flex flex-col gap-10">
+		<div className="md:mt-10 md:border border-gray-900 rounded-lg pt-4 pb-8 px-4 md:px-6 flex flex-col gap-8 md:gap-10">
 			<h1 className="text-3xl text-center font-medium">PDF Splitter</h1>
 			<div className="">
-				<div className="text-lg font-medium text-gray-900 mb-2">Upload PDF File</div>
+				<div className="text-sm md:text-lg font-bold md:font-medium text-gray-900 mb-2">Upload PDF File</div>
 				<div>
 					<input
 						accept=".pdf"
@@ -84,22 +80,22 @@ export const Home = () => {
 						onChange={handleFileChange}
 					/>
 					{}
-					<div className="text-sm text-gray-900 mt-1 font-medium">
+					<div className="text-xs md:text-sm text-gray-900 mt-1 font-medium">
 						Pages Count: <span className="text-red-600">{numOfPages}</span>
 					</div>
 				</div>
 			</div>
 			<div>
 				<div className="flex items-center mb-2 gap-2">
-					<span className="block text-lg font-medium text-gray-900">Split Pages</span>
-					<span>(Separated by comma, ex: 1, 2, 5-10, 14)</span>
+					<span className="text-sm md:text-lg font-bold md:font-medium text-gray-900">Split Pages</span>
+					<span className="text-xs md:text-base">(Separated by comma, ex: 1, 2, 5-10, 14)</span>
 				</div>
 				<div className="flex flex-col gap-3">
 					{splitter.map((val, idx) => {
 						return (
 							<div key={idx}>
-								<div className="flex gap-4 items-center">
-									<div>{`Split #${idx + 1}`}</div>
+								<div className="flex md:gap-4 items-center justify-start">
+									<div className="text-sm md:text-base w-[60px]">{`Split #${idx + 1}`}</div>
 									<input
 										className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-3/4 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
 										onChange={(e) => {
@@ -114,10 +110,10 @@ export const Home = () => {
 										placeholder="Pages number"
 									/>
 									{idx === 0 ? (
-										<></>
+										<div className="w-[30px] h-[30px] ml-1 md:ml-0"></div>
 									) : (
 										<button
-											className="font-bold bg-red-300 w-[30px] h-[30px] rounded-full"
+											className="font-bold text-sm bg-red-300 w-[30px] h-[30px] rounded-full ml-1 md:ml-0"
 											onClick={() => {
 												setSplitter(splitter.filter((_, i) => i !== idx));
 											}}
@@ -141,7 +137,7 @@ export const Home = () => {
 					Add Split
 				</button>
 			</div>
-			<div className="mt-4">
+			<div className="mt-4 flex justify-end md:justify-start">
 				<button
 					type="button"
 					disabled={!doc || !file || !splitter.find((val) => val !== '')}
@@ -151,7 +147,6 @@ export const Home = () => {
 					Download
 				</button>
 			</div>
-			<div>{message}</div>
 		</div>
 	);
 };
