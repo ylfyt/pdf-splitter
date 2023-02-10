@@ -32,7 +32,7 @@ export const Home = () => {
 
 	const split = async () => {
 		if (!doc) return;
-		splitter.forEach(async (val) => {
+		splitter.forEach(async (val, idx) => {
 			if (val === '') return;
 			const pages = val
 				.split(',')
@@ -59,7 +59,7 @@ export const Home = () => {
 				resultDoc.addPage(copied);
 			}
 			const buff = await resultDoc.save();
-			saveFile(buff, `${val}_${file?.name}`, 'application/pdf');
+			saveFile(buff, `Split#${idx + 1}_No${val}_${file?.name}`, 'application/pdf');
 		});
 	};
 
@@ -72,17 +72,28 @@ export const Home = () => {
 	};
 
 	return (
-		<div className="mt-10 border rounded-lg py-4 px-6 flex flex-col gap-5">
-			<h1 className="text-3xl text-center">PDF Splitter</h1>
+		<div className="mt-10 border border-gray-900 rounded-lg pt-4 px-6 flex flex-col gap-10">
+			<h1 className="text-3xl text-center font-medium">PDF Splitter</h1>
 			<div className="">
-				<label className="text-lg font-medium text-gray-900 mb-4">Upload file</label>
-				<div className="flex justify-between items-center">
-					<input accept=".pdf" className="bg-white file:rounded-md file:bg-gray-300 hover:file:bg-gray-400 w-full p-2 rounded-md" type="file" onChange={handleFileChange} />
-					<div className="w-[150px] font-semibold text-right">{numOfPages ? `${numOfPages} pages` : ''}</div>
+				<div className="text-lg font-medium text-gray-900 mb-2">Upload PDF File</div>
+				<div>
+					<input
+						accept=".pdf"
+						className="w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 p-2"
+						type="file"
+						onChange={handleFileChange}
+					/>
+					{}
+					<div className="text-sm text-gray-900 mt-1 font-medium">
+						Pages Count: <span className="text-red-600">{numOfPages}</span>
+					</div>
 				</div>
 			</div>
 			<div>
-				<span className="block text-lg font-medium text-gray-900 mb-1">Split Pages</span>
+				<div className="flex items-center mb-2 gap-2">
+					<span className="block text-lg font-medium text-gray-900">Split Pages</span>
+					<span>(Separated by comma, ex: 1, 2, 5-10, 14)</span>
+				</div>
 				<div className="flex flex-col gap-3">
 					{splitter.map((val, idx) => {
 						return (
@@ -90,13 +101,17 @@ export const Home = () => {
 								<div className="flex gap-4 items-center">
 									<div>{`Split #${idx + 1}`}</div>
 									<input
-										className="min-w-[400px] text-lg rounded-md px-2 py-1"
+										className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-3/4 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
 										onChange={(e) => {
+											if (e.target.value !== '' && !/^[0-9,-\s]+$/.test(e.target.value)) return;
+
 											splitter[idx] = e.target.value;
 											setSplitter([...splitter]);
+											return;
 										}}
 										type="text"
 										value={val}
+										placeholder="Pages number"
 									/>
 									{idx === 0 ? (
 										<></>
@@ -126,12 +141,12 @@ export const Home = () => {
 					Add Split
 				</button>
 			</div>
-			<div className="mt-10">
+			<div className="mt-4">
 				<button
 					type="button"
 					disabled={!doc || !file || !splitter.find((val) => val !== '')}
 					onClick={split}
-					className="text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 shadow-md disabled:opacity-50"
+					className="text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 shadow-md disabled:opacity-50"
 				>
 					Download
 				</button>

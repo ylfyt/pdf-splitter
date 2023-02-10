@@ -3,7 +3,7 @@ import { Home } from './pages';
 
 function App() {
 	return (
-		<div className="App bg-gray-400 min-h-screen flex flex-col items-center">
+		<div className="App min-h-screen flex flex-col items-center">
 			<Container>
 				<Home />
 			</Container>
