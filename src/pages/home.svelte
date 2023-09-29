@@ -5,51 +5,82 @@
 	let splits: string[] = [''];
 	let files: FileList | undefined;
 	let doc: PDFDocument | undefined;
+	let message = '';
 
-	$: files,
+	const updateDoc = () => {
+		if (!files || !files[0]) {
+			doc = undefined;
+			splits = [''];
+			return;
+		}
+		files[0].arrayBuffer().then(async (buff) => {
+			doc = await PDFDocument.load(buff);
+		});
+		splits = [''];
+	};
+
+	$: files, updateDoc();
+	$: splits,
 		(() => {
-			if (!files || !files[0]) {
-				doc = undefined;
-				return;
-			}
-			files[0].arrayBuffer().then(async (buff) => {
-				doc = await PDFDocument.load(buff);
-			});
+			message = '';
 		})();
 
-	const split = async () => {
-		if (!doc || !files?.[0]) return;
+	const getPages = (split: string): number[] | string => {
+		const pages: number[] = [];
+		const pageInfo = split.split(',');
+		for (let page of pageInfo) {
+			if (!page.includes('-')) {
+				const pageNumber = parseInt(page);
+				if (isNaN(pageNumber)) {
+					return `Split ${split}: must be number`;
+				}
+				pages.push(pageNumber) - 1;
+				continue;
+			}
+			const data = page.split('-').map((val) => parseInt(val));
+			if (data.length < 2 || isNaN(data[0]) || isNaN(data[1])) {
+				return `Split ${split}: must be number`;
+			}
+			for (let i = data[0]; i <= data[1]; i++) {
+				pages.push(i - 1);
+			}
+		}
 
-		splits.forEach(async (val, idx) => {
-			if (val === '') return;
+		if (pages.length === 0) {
+			return `Split ${split}: no valid page number`;
+		}
+		for (let page of pages) {
+			if (page < 0 || page >= doc!.getPageCount()) {
+				return `Split ${split}: page number must be between ${1} - ${doc?.getPageCount()}`;
+			}
+		}
+		return pages;
+	};
 
-			const pages = val
-				.split(',')
-				.map((page) => {
-					if (!page.includes('-')) {
-						return Number.isNaN(parseInt(page)) ? [] : parseInt(page) - 1;
-					}
-					const data = page.split('-').map((val) => parseInt(val));
-					if (data.length < 2 || Number.isNaN(data[0]) || Number.isNaN(data[1])) return [];
+	const splitPdf = async () => {
+		const pdf: number[][] = [];
+		for (let idx = 0; idx < splits.length; idx++) {
+			const pages = getPages(splits[idx]);
+			if (typeof pages === 'string') {
+				message = pages;
+				pdf.push([]);
+				return;
+			}
+			pdf.push(pages);
+		}
 
-					const temp: number[] = [];
-					for (let i = data[0]; i <= data[1]; i++) {
-						temp.push(i - 1);
-					}
-					return temp;
-				})
-				.flat()
-				.filter((val) => val >= 0 || val);
-			if (pages.length === 0) return;
-
+		for (let idx = 0; idx < splits.length; idx++) {
+			if (pdf[idx].length === 0) {
+				continue;
+			}
 			const resultDoc = await PDFDocument.create();
-			const copiedPages = await resultDoc.copyPages(doc!, pages);
+			const copiedPages = await resultDoc.copyPages(doc!, pdf[idx]);
 			for (const copied of copiedPages) {
 				resultDoc.addPage(copied);
 			}
 			const buff = await resultDoc.save();
-			saveFile(buff, `Split#${idx + 1}_No${val}_${files![0]?.name}`, 'application/pdf');
-		});
+			saveFile(buff, `Split#${idx + 1}_No${splits[idx]}_${files![0]?.name}`, 'application/pdf');
+		}
 	};
 
 	function init(el: HTMLInputElement) {
@@ -82,35 +113,29 @@
 		</div>
 		<div class="flex flex-col gap-3">
 			{#each splits as _, idx}
-				<div>
-					<div class="flex md:gap-4 items-center justify-start">
-						<div class="text-sm md:text-base w-[60px]">{`Split #${idx + 1}`}</div>
-						<input
-							class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-3/4 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-							type="text"
-							placeholder="Pages number"
-							bind:value={splits[idx]}
-							use:init
-						/>
-						{#if idx === 0}
-							<div class="w-[30px] h-[30px] ml-1 md:ml-0" />
-						{:else}
-							<button
-								on:click={() => {
-									splits = splits.filter((_, i) => idx != i);
-								}}
-								class="font-bold text-sm bg-red-300 w-[30px] h-[30px] rounded-full ml-1 md:ml-0"
-							>
-								&#10005;
-							</button>
-						{/if}
-					</div>
+				<div class="flex md:gap-4 items-center justify-center">
+					<div class="text-sm md:text-base w-[70px]">{`Split #${idx + 1}`}</div>
+					<input
+						class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+						type="text"
+						placeholder="Pages number"
+						bind:value={splits[idx]}
+						use:init
+					/>
+					<button
+						on:click={() => {
+							splits = splits.filter((_, i) => idx != i);
+						}}
+						class={`font-bold text-2xl w-[35px] h-[35px] rounded-full flex items-center justify-center ${idx === 0 ? 'invisible': 'visible'}`}
+					>
+						&#10005;
+					</button>
 				</div>
 			{/each}
 		</div>
 		<button
 			type="button"
-			class="text-white bg-orange-400 focus:outline-none focus:ring-4 focus:ring-blue-300 rounded-lg text-sm px-3 py-1 text-center mt-2 shadow-sm"
+			class="bg-green-400 focus:outline-none focus:ring-4 focus:ring-blue-300 rounded-lg text-sm px-3 py-1 text-center mt-2 shadow-sm"
 			on:click={() => {
 				splits.push('');
 				splits = [...splits];
@@ -119,16 +144,19 @@
 			Add Split
 		</button>
 	</div>
-	<div class="mt-4 flex justify-end md:justify-start">
+	<div class="mt-4 flex items-center md:flex-row flex-row-reverse gap-4">
 		<button
 			type="button"
 			disabled={!doc || !splits.find((val) => val !== '')}
-			class="text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 shadow-md disabled:opacity-50"
+			class="py-2 px-4 bg-orange-400 rounded-lg shadow-md disabled:opacity-70"
 			on:click={() => {
-				split();
+				splitPdf();
 			}}
 		>
-			Download
+			Split
 		</button>
+		{#if message.length != 0}
+			<span class="text-red-600 text-center">{message}</span>
+		{/if}
 	</div>
 </div>
