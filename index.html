@@ -1,15 +1,52 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/pdf-splitter/pdf.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PDF Splitter</title>
-    <script type="module" crossorigin src="/pdf-splitter/assets/index-6cd7fe0e.js"></script>
-    <link rel="stylesheet" href="/pdf-splitter/assets/index-10d386f2.css">
-  </head>
-  <body>
-    <div id="app"></div>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="./favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     
-  </body>
+		<link href="./_app/immutable/assets/2.Bu2Ie2Re.css" rel="stylesheet">
+		<link rel="modulepreload" href="./_app/immutable/entry/start.B-pFAzrD.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/entry.xdZM5T0V.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/scheduler.D-9INhcV.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/index.fGjvP9ge.js">
+		<link rel="modulepreload" href="./_app/immutable/entry/app.BLtg9RN7.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/index.CkPSus7v.js">
+		<link rel="modulepreload" href="./_app/immutable/nodes/0.wWxXzi2a.js">
+		<link rel="modulepreload" href="./_app/immutable/nodes/2.CgQIqrpF.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/theme.DkIrD5dx.js">
+		<link rel="modulepreload" href="./_app/immutable/nodes/3.C06yaXQg.js"><title>PDF Splitter</title><!-- HEAD_svelte-ip18el_START --><meta name="description" content="PDF Splitter"><!-- HEAD_svelte-ip18el_END -->
+</head>
+
+<body class="min-h-dvh bg-light text-dark dark:bg-dark dark:text-light" data-sveltekit-preload-data="hover">
+    <div style="display: contents">   <div class="flex min-h-dvh flex-col items-center"><div class="w-full px-4 lg:w-1/2"><div class="mt-4 flex flex-col gap-8"><div class="flex items-end justify-between"><div data-svelte-h="svelte-1frm76c"><h1 class="text-center text-2xl font-medium text-color0">PDF Splitter</h1> <p>By <a href="https://ylfyt.github.io" target="_blank" class="text-color0 underline">ylfyt</a></p></div> <div><button aria-label="dark-mode-toggle" class="text-color0"></button></div></div> <form class="flex flex-col gap-8"><div><label for="pdf" class="text-sm font-bold text-dark dark:text-light md:text-lg md:font-medium" data-svelte-h="svelte-f8rx8e">PDF File</label> <input id="pdf" accept=".pdf" class="mt-2 w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:placeholder-gray-400" type="file" required> </div> <div><div class="mb-2 flex items-center gap-2" data-svelte-h="svelte-rcvx3b"><span class="text-sm font-bold md:text-lg md:font-medium">Split Pages</span> <span class="text-xs md:text-base">(Separated by comma, ex: 1, 2, 5-10, 14)</span></div> <div class="flex flex-col gap-3"><div class="flex items-center justify-center gap-2 md:gap-4"><label for="split-0" class="w-[70px] text-sm md:text-base">Split #1</label> <input id="split-0" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500" type="text" required placeholder="Pages number" value=""> <button class="size-4 items-center justify-center rounded-full text-xl font-bold hidden">✕</button> </div></div> <button type="button" class="mt-2 rounded-lg bg-color0 px-3 py-1 text-center text-sm shadow-sm focus:outline-none focus:ring-4 focus:ring-blue-300" data-svelte-h="svelte-1xfbf3a">Add Split</button></div> <div class="mt-4 flex items-center justify-end gap-4"> <button disabled type="submit" class="rounded-lg bg-color0 px-4 py-2 shadow-md disabled:opacity-70">Split</button></div></form></div></div></div> 
+			
+			<script>
+				{
+					__sveltekit_5571iz = {
+						base: new URL(".", location).pathname.slice(0, -1),
+						assets: "/pdf-splitter"
+					};
+
+					const element = document.currentScript.parentElement;
+
+					const data = [null,null,null];
+
+					Promise.all([
+						import("./_app/immutable/entry/start.B-pFAzrD.js"),
+						import("./_app/immutable/entry/app.BLtg9RN7.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element, {
+							node_ids: [0, 2, 3],
+							data,
+							form: null,
+							error: null
+						});
+					});
+				}
+			</script>
+		</div>
+</body>
+
 </html>
