@@ -28,21 +28,21 @@
             message = '';
         })();
 
-    const getPages = (split: string): number[] | string => {
+    const getPages = (split: string, idx: number): number[] | string => {
         const pages: number[] = [];
         const pageInfo = split.split(',');
         for (let page of pageInfo) {
             if (!page.includes('-')) {
                 const pageNumber = parseInt(page);
                 if (isNaN(pageNumber)) {
-                    return `Split ${split}: must be number`;
+                    return `Split #${idx + 1}: must be number`;
                 }
-                pages.push(pageNumber) - 1;
+                pages.push(pageNumber - 1);
                 continue;
             }
             const data = page.split('-').map((val) => parseInt(val));
             if (data.length < 2 || isNaN(data[0]) || isNaN(data[1])) {
-                return `Split ${split}: must be number`;
+                return `Split #${idx + 1}: must be number`;
             }
             for (let i = data[0]; i <= data[1]; i++) {
                 pages.push(i - 1);
@@ -50,11 +50,11 @@
         }
 
         if (pages.length === 0) {
-            return `Split ${split}: no valid page number`;
+            return `Split #${idx + 1}: no valid page number`;
         }
         for (let page of pages) {
             if (page < 0 || page >= doc!.getPageCount()) {
-                return `Split ${split}: page number must be between ${1} - ${doc?.getPageCount()}`;
+                return `Split #${idx + 1}: page number must be between ${1} - ${doc?.getPageCount()}`;
             }
         }
         return pages;
@@ -63,10 +63,9 @@
     const splitPdf = async () => {
         const pdf: number[][] = [];
         for (let idx = 0; idx < splits.length; idx++) {
-            const pages = getPages(splits[idx]);
+            const pages = getPages(splits[idx], idx);
             if (typeof pages === 'string') {
                 message = pages;
-                pdf.push([]);
                 return;
             }
             pdf.push(pages);
