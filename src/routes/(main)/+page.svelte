@@ -1,6 +1,9 @@
 <script lang="ts">
     import { PDFDocument } from 'pdf-lib';
     import { saveFile } from '@/utils/save-file.js';
+    import { isDarkStore } from '@/stores/theme';
+    import Icon from '@iconify/svelte';
+    import { fly } from 'svelte/transition';
 
     let splits: string[] = [''];
     let files: FileList | undefined;
@@ -88,75 +91,100 @@
     }
 </script>
 
-<div class="flex flex-col gap-8 rounded-lg border-gray-900 px-4 pb-8 pt-4 md:mt-10 md:gap-10 md:border md:px-6">
-    <h1 class="text-center text-3xl font-medium">PDF Splitter</h1>
-    <div class="">
-        <div class="mb-2 text-sm font-bold text-gray-900 md:text-lg md:font-medium">Upload PDF File</div>
+<div class="mt-4 flex flex-col gap-8">
+    <div class="flex items-end justify-between">
         <div>
-            <input
-                accept=".pdf"
-                class="w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm text-gray-900 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:placeholder-gray-400"
-                type="file"
-                bind:files
-            />
-            {#if doc}
-                <div class="mt-1 text-xs font-medium text-gray-900 md:text-sm">
-                    Pages Count: <span class="text-red-600">{doc?.getPageCount()}</span>
-                </div>
+            <h1 class="text-center text-2xl font-medium text-color0">PDF Splitter</h1>
+            <p>By <a href="https://ylfyt.github.io" target="_blank" class="text-color0 underline">ylfyt</a></p>
+        </div>
+        <div>
+            {#if $isDarkStore}
+                <button
+                    aria-label="dark-mode-toggle"
+                    in:fly={{ y: -25 }}
+                    on:click={() => isDarkStore.update((prev) => !prev)}
+                    class="text-color0"><Icon icon="fa:moon-o" /></button
+                >
+            {:else}
+                <button
+                    aria-label="dark-mode-toggle"
+                    in:fly={{ y: 25 }}
+                    on:click={() => isDarkStore.update((prev) => !prev)}
+                    class="text-color0"><Icon icon="fa:sun-o" /></button
+                >
             {/if}
         </div>
     </div>
-    <div>
-        <div class="mb-2 flex items-center gap-2">
-            <span class="text-sm font-bold text-gray-900 md:text-lg md:font-medium">Split Pages</span>
-            <span class="text-xs md:text-base">(Separated by comma, ex: 1, 2, 5-10, 14)</span>
-        </div>
-        <div class="flex flex-col gap-3">
-            {#each splits as _, idx}
-                <div class="flex items-center justify-center md:gap-4">
-                    <div class="w-[70px] text-sm md:text-base">{`Split #${idx + 1}`}</div>
-                    <input
-                        class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                        type="text"
-                        placeholder="Pages number"
-                        bind:value={splits[idx]}
-                        use:init
-                    />
-                    <button
-                        on:click={() => {
-                            splits = splits.filter((_, i) => idx != i);
-                        }}
-                        class={`flex h-[35px] w-[35px] items-center justify-center rounded-full text-2xl font-bold ${idx === 0 ? 'invisible' : 'visible'}`}
-                    >
-                        &#10005;
-                    </button>
+    <form on:submit|preventDefault={splitPdf} class="flex flex-col gap-8">
+        <div>
+            <label for="pdf" class="text-sm font-bold text-dark dark:text-light md:text-lg md:font-medium"
+                >PDF File</label
+            >
+            <input
+                id="pdf"
+                accept=".pdf"
+                class="mt-2 w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:placeholder-gray-400"
+                type="file"
+                required
+                bind:files
+            />
+            {#if doc}
+                <div class="mt-1 text-xs font-medium md:text-sm">
+                    Pages Count: <span class="text-color0">{doc?.getPageCount()}</span>
                 </div>
-            {/each}
+            {/if}
         </div>
-        <button
-            type="button"
-            class="mt-2 rounded-lg bg-green-400 px-3 py-1 text-center text-sm shadow-sm focus:outline-none focus:ring-4 focus:ring-blue-300"
-            on:click={() => {
-                splits.push('');
-                splits = [...splits];
-            }}
-        >
-            Add Split
-        </button>
-    </div>
-    <div class="mt-4 flex flex-row-reverse items-center gap-4 md:flex-row">
-        <button
-            type="button"
-            disabled={!doc || !splits.find((val) => val !== '')}
-            class="rounded-lg bg-orange-400 px-4 py-2 shadow-md disabled:opacity-70"
-            on:click={() => {
-                splitPdf();
-            }}
-        >
-            Split
-        </button>
-        {#if message.length != 0}
-            <span class="text-center text-red-600">{message}</span>
-        {/if}
-    </div>
+        <div>
+            <div class="mb-2 flex items-center gap-2">
+                <span class="text-sm font-bold md:text-lg md:font-medium">Split Pages</span>
+                <span class="text-xs md:text-base">(Separated by comma, ex: 1, 2, 5-10, 14)</span>
+            </div>
+            <div class="flex flex-col gap-3">
+                {#each splits as _, idx (idx)}
+                    <div class="flex items-center justify-center gap-2 md:gap-4">
+                        <label for={`split-${idx}`} class="w-[70px] text-sm md:text-base">{`Split #${idx + 1}`}</label>
+                        <input
+                            id={`split-${idx}`}
+                            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                            type="text"
+                            required
+                            placeholder="Pages number"
+                            bind:value={splits[idx]}
+                            use:init
+                        />
+                        <button
+                            on:click={() => {
+                                splits = splits.filter((_, i) => idx != i);
+                            }}
+                            class={`size-4 items-center justify-center rounded-full text-xl font-bold ${splits.length < 2 ? 'hidden' : 'flex'}`}
+                        >
+                            &#10005;
+                        </button>
+                    </div>
+                {/each}
+            </div>
+            <button
+                type="button"
+                class="mt-2 rounded-lg bg-color0 px-3 py-1 text-center text-sm shadow-sm focus:outline-none focus:ring-4 focus:ring-blue-300"
+                on:click={() => {
+                    splits.push('');
+                    splits = [...splits];
+                }}
+            >
+                Add Split
+            </button>
+        </div>
+        <div class="mt-4 flex items-center justify-end gap-4">
+            {#if message.length != 0}
+                <span class="text-center text-red-600">{message}</span>
+            {/if}
+            <button
+                disabled={!doc || !splits.find((val) => val !== '')}
+                type="submit"
+                class="rounded-lg bg-color0 px-4 py-2 shadow-md disabled:opacity-70"
+            >
+                Split
+            </button>
+        </div>
+    </form>
 </div>
