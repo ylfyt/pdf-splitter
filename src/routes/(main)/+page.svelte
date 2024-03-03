@@ -152,6 +152,7 @@
                             use:init
                         />
                         <button
+                            type="button"
                             on:click={() => {
                                 splits = splits.filter((_, i) => idx != i);
                             }}
