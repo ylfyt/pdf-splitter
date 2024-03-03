@@ -20,7 +20,7 @@ const config = {
             assets: 'public'
         },
         paths: {
-            base: '/pdf-splitter'
+            base: process.env.NODE_ENV === 'production' ? '/pdf-splitter' : ''
         }
     }
 };
