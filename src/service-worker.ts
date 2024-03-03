@@ -37,11 +37,13 @@ self.addEventListener('fetch', e => {
 
     const getResponse = async () => {
         const url = new URL(e.request.url);
+        console.log('URL', url.pathname);
 
         const cache = await caches.open(CACHE_NAME);
 
         if (ASSETS.includes(url.pathname)) {
             const cachedResponse = await cache.match(url.pathname);
+            console.log('ASSET', cachedResponse);
             if (cachedResponse) return cachedResponse;
         }
 
@@ -50,15 +52,18 @@ self.addEventListener('fetch', e => {
             const isNotExtension = url.protocol === 'http:';
             const isSuccess = response.status === 200;
             if (isNotExtension && isSuccess) {
+                console.log('NOT EXT');
                 cache.put(e.request, response.clone());
             }
+            console.log('res', response);
             return response;
         } catch {
             const cachedResponse = await cache.match(url.pathname);
+            console.log('off', cachedResponse);
             if (cachedResponse) return cachedResponse;
         }
-
-        return new Response('Not found', { status: 404 });
+        console.log('not found');
+        return new Response('Req: Not found', { status: 404 });
     };
 
     e.respondWith(getResponse());
