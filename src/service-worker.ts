@@ -13,8 +13,6 @@ const ASSETS = [
     ...files.filter(el => !el.includes(".nojekyll"))
 ];
 
-console.log(ASSETS, build, files);
-
 self.addEventListener('install', e => {
     const addFileToCache = async () => {
         const cache = await caches.open(CACHE_NAME);
@@ -39,10 +37,6 @@ self.addEventListener('fetch', e => {
 
     const getResponse = async () => {
         const url = new URL(e.request.url);
-        if (url.pathname === "/" || url.pathname === "/pdf-splitter" || url.pathname === "/pdf-splitter/") {
-            console.log('URL', url);
-        }
-
         const cache = await caches.open(CACHE_NAME);
 
         if (ASSETS.includes(url.pathname)) {
