@@ -6,11 +6,11 @@
     <link rel="icon" href="/pdf-splitter/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     
-		<link rel="modulepreload" href="/pdf-splitter/_app/immutable/entry/start.XOsF-aMJ.js">
-		<link rel="modulepreload" href="/pdf-splitter/_app/immutable/chunks/entry.BaUkAJgn.js">
+		<link rel="modulepreload" href="/pdf-splitter/_app/immutable/entry/start.oua_yoNF.js">
+		<link rel="modulepreload" href="/pdf-splitter/_app/immutable/chunks/entry.DgWXB-QG.js">
 		<link rel="modulepreload" href="/pdf-splitter/_app/immutable/chunks/scheduler.D-9INhcV.js">
 		<link rel="modulepreload" href="/pdf-splitter/_app/immutable/chunks/index.fGjvP9ge.js">
-		<link rel="modulepreload" href="/pdf-splitter/_app/immutable/entry/app.BVY88K7w.js">
+		<link rel="modulepreload" href="/pdf-splitter/_app/immutable/entry/app.DqqrbhKh.js">
 		<link rel="modulepreload" href="/pdf-splitter/_app/immutable/chunks/index.CkPSus7v.js">
 </head>
 
@@ -18,7 +18,7 @@
     <div style="display: contents">
 			<script>
 				{
-					__sveltekit_1eczn8w = {
+					__sveltekit_1o7z8fm = {
 						base: "/pdf-splitter",
 						assets: "/pdf-splitter"
 					};
@@ -26,11 +26,17 @@
 					const element = document.currentScript.parentElement;
 
 					Promise.all([
-						import("/pdf-splitter/_app/immutable/entry/start.XOsF-aMJ.js"),
-						import("/pdf-splitter/_app/immutable/entry/app.BVY88K7w.js")
+						import("/pdf-splitter/_app/immutable/entry/start.oua_yoNF.js"),
+						import("/pdf-splitter/_app/immutable/entry/app.DqqrbhKh.js")
 					]).then(([kit, app]) => {
 						kit.start(app, element);
 					});
+
+					if ('serviceWorker' in navigator) {
+						addEventListener('load', function () {
+							navigator.serviceWorker.register('/pdf-splitter/service-worker.js');
+						});
+					}
 				}
 			</script>
 		</div>
