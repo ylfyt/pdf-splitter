@@ -52,7 +52,7 @@ self.addEventListener('fetch', e => {
 
         try {
             const response = await fetch(e.request);
-            const isNotExtension = url.protocol === 'http:';
+            const isNotExtension = url.protocol === 'https:' || url.protocol === 'http:';
             const isSuccess = response.status === 200;
             if (isNotExtension && isSuccess) {
                 cache.put(e.request, response.clone());
